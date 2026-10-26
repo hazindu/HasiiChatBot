@@ -61,13 +61,13 @@ async def chatbot_text(client: Client, message: Message):
         if not is_hasii:
             await safe_send(client.send_chat_action, message.chat.id, ChatAction.TYPING)
             K = []
-            is_chat = chatai.find({"word": message.text})
-            k = chatai.find_one({"word": message.text})
+            is_chat = chatai.find({"chat_id": message.chat.id, "word": message.text})
+            k = chatai.find_one({"chat_id": message.chat.id, "word": message.text})
             if k:
                 for x in is_chat:
                     K.append(x["text"])
                 hey = random.choice(K)
-                is_text = chatai.find_one({"text": hey})
+                is_text = chatai.find_one({"chat_id": message.chat.id, "text": hey})
                 Yo = is_text["check"]
                 if Yo == "sticker":
                     await safe_send(message.reply_sticker, f"{hey}")
@@ -85,13 +85,13 @@ async def chatbot_text(client: Client, message: Message):
             if not is_hasii:
                 await safe_send(client.send_chat_action, message.chat.id, ChatAction.TYPING)
                 K = []
-                is_chat = chatai.find({"word": message.text})
-                k = chatai.find_one({"word": message.text})
+                is_chat = chatai.find({"chat_id": message.chat.id, "word": message.text})
+                k = chatai.find_one({"chat_id": message.chat.id, "word": message.text})
                 if k:
                     for x in is_chat:
                         K.append(x["text"])
                     hey = random.choice(K)
-                    is_text = chatai.find_one({"text": hey})
+                    is_text = chatai.find_one({"chat_id": message.chat.id, "text": hey})
                     Yo = is_text["check"]
                     if Yo == "sticker":
                         await safe_send(message.reply_sticker, f"{hey}")
@@ -101,6 +101,7 @@ async def chatbot_text(client: Client, message: Message):
             if message.sticker:
                 is_chat = chatai.find_one(
                     {
+                        "chat_id": message.chat.id,
                         "word": message.reply_to_message.text,
                         "id": message.sticker.file_unique_id,
                     }
@@ -108,6 +109,7 @@ async def chatbot_text(client: Client, message: Message):
                 if not is_chat:
                     chatai.insert_one(
                         {
+                            "chat_id": message.chat.id,
                             "word": message.reply_to_message.text,
                             "text": message.sticker.file_id,
                             "check": "sticker",
@@ -116,11 +118,12 @@ async def chatbot_text(client: Client, message: Message):
                     )
             if message.text:
                 is_chat = chatai.find_one(
-                    {"word": message.reply_to_message.text, "text": message.text}
+                    {"chat_id": message.chat.id, "word": message.reply_to_message.text, "text": message.text}
                 )
                 if not is_chat:
                     chatai.insert_one(
                         {
+                            "chat_id": message.chat.id,
                             "word": message.reply_to_message.text,
                             "text": message.text,
                             "check": "none",
@@ -153,13 +156,13 @@ async def chatbot_sticker(client: Client, message: Message):
         if not is_hasii:
             await safe_send(client.send_chat_action, message.chat.id, ChatAction.TYPING)
             K = []
-            is_chat = chatai.find({"word": message.sticker.file_unique_id})
-            k = chatai.find_one({"word": message.text})
+            is_chat = chatai.find({"chat_id": message.chat.id, "word": message.sticker.file_unique_id})
+            k = chatai.find_one({"chat_id": message.chat.id, "word": message.text})
             if k:
                 for x in is_chat:
                     K.append(x["text"])
                 hey = random.choice(K)
-                is_text = chatai.find_one({"text": hey})
+                is_text = chatai.find_one({"chat_id": message.chat.id, "text": hey})
                 Yo = is_text["check"]
                 if Yo == "text":
                     await safe_send(message.reply_text, f"{hey}")
@@ -177,13 +180,13 @@ async def chatbot_sticker(client: Client, message: Message):
             if not is_hasii:
                 await safe_send(client.send_chat_action, message.chat.id, ChatAction.TYPING)
                 K = []
-                is_chat = chatai.find({"word": message.text})
-                k = chatai.find_one({"word": message.text})
+                is_chat = chatai.find({"chat_id": message.chat.id, "word": message.text})
+                k = chatai.find_one({"chat_id": message.chat.id, "word": message.text})
                 if k:
                     for x in is_chat:
                         K.append(x["text"])
                     hey = random.choice(K)
-                    is_text = chatai.find_one({"text": hey})
+                    is_text = chatai.find_one({"chat_id": message.chat.id, "text": hey})
                     Yo = is_text["check"]
                     if Yo == "text":
                         await safe_send(message.reply_text, f"{hey}")
@@ -193,13 +196,15 @@ async def chatbot_sticker(client: Client, message: Message):
             if message.text:
                 is_chat = chatai.find_one(
                     {
+                        "chat_id": message.chat.id,
                         "word": message.reply_to_message.sticker.file_unique_id,
                         "text": message.text,
                     }
                 )
                 if not is_chat:
-                    toggle.insert_one(
+                    chatai.insert_one(
                         {
+                            "chat_id": message.chat.id,
                             "word": message.reply_to_message.sticker.file_unique_id,
                             "text": message.text,
                             "check": "text",
@@ -208,6 +213,7 @@ async def chatbot_sticker(client: Client, message: Message):
             if message.sticker:
                 is_chat = chatai.find_one(
                     {
+                        "chat_id": message.chat.id,
                         "word": message.reply_to_message.sticker.file_unique_id,
                         "text": message.sticker.file_id,
                     }
@@ -215,6 +221,7 @@ async def chatbot_sticker(client: Client, message: Message):
                 if not is_chat:
                     chatai.insert_one(
                         {
+                            "chat_id": message.chat.id,
                             "word": message.reply_to_message.sticker.file_unique_id,
                             "text": message.sticker.file_id,
                             "check": "none",
@@ -242,11 +249,11 @@ async def chatbot_pvt(client: Client, message: Message):
     if not message.reply_to_message:
         await safe_send(client.send_chat_action, message.chat.id, ChatAction.TYPING)
         K = []
-        is_chat = chatai.find({"word": message.text})
+        is_chat = chatai.find({"chat_id": message.chat.id, "word": message.text})
         for x in is_chat:
             K.append(x["text"])
         hey = random.choice(K)
-        is_text = chatai.find_one({"text": hey})
+        is_text = chatai.find_one({"chat_id": message.chat.id, "text": hey})
         Yo = is_text["check"]
         if Yo == "sticker":
             await safe_send(message.reply_sticker, f"{hey}")
@@ -259,11 +266,11 @@ async def chatbot_pvt(client: Client, message: Message):
         if reply.from_user.id == client.id:
             await safe_send(client.send_chat_action, message.chat.id, ChatAction.TYPING)
             K = []
-            is_chat = chatai.find({"word": message.text})
+            is_chat = chatai.find({"chat_id": message.chat.id, "word": message.text})
             for x in is_chat:
                 K.append(x["text"])
             hey = random.choice(K)
-            is_text = chatai.find_one({"text": hey})
+            is_text = chatai.find_one({"chat_id": message.chat.id, "text": hey})
             Yo = is_text["check"]
             if Yo == "sticker":
                 await safe_send(message.reply_sticker, f"{hey}")
@@ -294,11 +301,11 @@ async def chatbot_sticker_pvt(client: Client, message: Message):
     if not message.reply_to_message:
         await safe_send(client.send_chat_action, message.chat.id, ChatAction.TYPING)
         K = []
-        is_chat = chatai.find({"word": message.sticker.file_unique_id})
+        is_chat = chatai.find({"chat_id": message.chat.id, "word": message.sticker.file_unique_id})
         for x in is_chat:
             K.append(x["text"])
         hey = random.choice(K)
-        is_text = chatai.find_one({"text": hey})
+        is_text = chatai.find_one({"chat_id": message.chat.id, "text": hey})
         Yo = is_text["check"]
         if Yo == "text":
             await safe_send(message.reply_text, f"{hey}")
@@ -311,11 +318,11 @@ async def chatbot_sticker_pvt(client: Client, message: Message):
         if reply.from_user.id == client.id:
             await safe_send(client.send_chat_action, message.chat.id, ChatAction.TYPING)
             K = []
-            is_chat = chatai.find({"word": message.sticker.file_unique_id})
+            is_chat = chatai.find({"chat_id": message.chat.id, "word": message.sticker.file_unique_id})
             for x in is_chat:
                 K.append(x["text"])
             hey = random.choice(K)
-            is_text = chatai.find_one({"text": hey})
+            is_text = chatai.find_one({"chat_id": message.chat.id, "text": hey})
             Yo = is_text["check"]
             if Yo == "text":
                 await safe_send(message.reply_text, f"{hey}")
