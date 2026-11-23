@@ -1,5 +1,14 @@
+import asyncio
 import logging 
 import time
+
+# Ensure an event loop is set for Python 3.10+ before pyrogram / Abg imports
+try:
+    asyncio.get_event_loop()
+except RuntimeError:
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+
 from Abg import patch
 
 from motor.motor_asyncio import AsyncIOMotorClient as MongoCli
